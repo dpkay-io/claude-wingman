@@ -1,0 +1,57 @@
+{
+  "name": "claude-wingman",
+  "version": "1.0.0",
+  "description": "Use all your computers from one Claude Code session: hand work to Claude agents on your other Mac, Windows or Linux machines, over Tailscale. No SSH, one command to set up.",
+  "author": "dpkay <hello@dpkay.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dpkay-io/claude-wingman.git"
+  },
+  "homepage": "https://github.com/dpkay-io/claude-wingman#readme",
+  "bugs": {
+    "url": "https://github.com/dpkay-io/claude-wingman/issues"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-cli",
+    "ai-agents",
+    "agents",
+    "remote",
+    "multi-machine",
+    "cross-platform",
+    "tailscale",
+    "paseo",
+    "dispatch",
+    "windows",
+    "macos",
+    "linux",
+    "wsl",
+    "developer-experience",
+    "productivity",
+    "remote-development",
+    "ssh-alternative",
+    "cross-platform-testing"
+  ],
+  "type": "module",
+  "bin": {
+    "claude-wingman": "bin/claude-wingman.js"
+  },
+  "files": [
+    "bin/claude-wingman.js",
+    "src"
+  ],
+  "engines": {
+    "node": ">=20.11"
+  },
+  "scripts": {
+    "test": "node --test",
+    "e2e": "node --test --test-concurrency=1 e2e/remote.e2e.js",
+    "check": "node tools/check-release.js",
+    "docs": "node tools/build-setup-doc.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3"
+  }
+}
