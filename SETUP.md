@@ -421,7 +421,8 @@ git clone https://github.com/dpkay-io/claude-wingman.git && cd claude-wingman
 npm install
 npm install -g .   # a linked install: your edits apply immediately
 npm test           # unit tests (node --test); OS-specific ones skip elsewhere
-npm run e2e        # end-to-end, against your real paired machines (CLAUDE_WINGMAN_E2E_AGENTS=1 also starts agents)
+npm run e2e        # end-to-end, against your real paired machines (CLAUDE_WINGMAN_E2E_AGENTS=1 also starts agents;
+                   # CLAUDE_WINGMAN_E2E_CLI=<path to bin/claude-wingman.js> tests an installed copy instead of this checkout)
 npm run check      # release checks: package.json, the published files, no credentials or personal details
 npm run docs       # re-embed the sources into SETUP.md (a test fails if it drifts)
 ```
@@ -4490,7 +4491,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from '../src/config.js';
 
-const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'claude-wingman.js');
+// The CLI under test: this checkout's, or an installed one (e.g. the published package):
+//   CLAUDE_WINGMAN_E2E_CLI="$(npm root -g)/claude-wingman/bin/claude-wingman.js" npm run e2e
+const CLI = process.env.CLAUDE_WINGMAN_E2E_CLI || path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'claude-wingman.js');
 const cfg = loadConfig();
 const only = process.env.CLAUDE_WINGMAN_E2E?.split(',').map((s) => s.trim()).filter(Boolean);
 const peers = Object.entries(cfg.peers).filter(([name]) => !only || only.includes(name));
@@ -4505,6 +4508,7 @@ const runOn = (name, command, extra = []) => cli(['run', name, ...extra, '--', c
 const sleepFor = (ms) => new Promise((r) => setTimeout(r, ms));
 
 test('there is something to test', { skip: !cfg.self && 'this machine is not set up' }, () => {
+  console.log(`testing ${CLI} (claude-wingman ${spawnSync(process.execPath, [CLI, 'version'], { encoding: 'utf8' }).stdout.trim()})`);
   assert.ok(peers.length, only ? `none of ${only.join(', ')} is paired here` : 'no paired machines');
 });
 

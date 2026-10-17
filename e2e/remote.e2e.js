@@ -11,7 +11,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadConfig } from '../src/config.js';
 
-const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'claude-wingman.js');
+// The CLI under test: this checkout's, or an installed one (e.g. the published package):
+//   CLAUDE_WINGMAN_E2E_CLI="$(npm root -g)/claude-wingman/bin/claude-wingman.js" npm run e2e
+const CLI = process.env.CLAUDE_WINGMAN_E2E_CLI || path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'claude-wingman.js');
 const cfg = loadConfig();
 const only = process.env.CLAUDE_WINGMAN_E2E?.split(',').map((s) => s.trim()).filter(Boolean);
 const peers = Object.entries(cfg.peers).filter(([name]) => !only || only.includes(name));
@@ -26,6 +28,7 @@ const runOn = (name, command, extra = []) => cli(['run', name, ...extra, '--', c
 const sleepFor = (ms) => new Promise((r) => setTimeout(r, ms));
 
 test('there is something to test', { skip: !cfg.self && 'this machine is not set up' }, () => {
+  console.log(`testing ${CLI} (claude-wingman ${spawnSync(process.execPath, [CLI, 'version'], { encoding: 'utf8' }).stdout.trim()})`);
   assert.ok(peers.length, only ? `none of ${only.join(', ')} is paired here` : 'no paired machines');
 });
 
